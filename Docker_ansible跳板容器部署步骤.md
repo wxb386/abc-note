@@ -35,7 +35,7 @@
 ```
 # iptables -A INPUT -p tcp -m tcp --dport 55555 -m state --state NEW -j ACCEPT
 # docker run --name ansible -h ansible \
-    -v /etc/localtime:/etc/localtime:ro \
+    -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
     -v /data/ansible/conf/:/etc/ansible/:rw \
     -v /data/ansible/:/ansible/:rw \
     -p 55555:22/tcp \
