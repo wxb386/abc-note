@@ -28,7 +28,93 @@ kvm_intel kvm_amd
 # virsh <net-list | net-define | net-undefine | net-start | net-autostart | net-edit>
 ```
 #### 2.2. 虚拟机配置文件
-##### 2.2.1. 配置文件结构
+##### 2.2.1. 配置文件结构 - Windows系统
+```
+<domain type='kvm'>
+  <name>win7</name>
+  <memory unit='GiB'>2</memory>
+  <currentMemory unit='GiB'>2</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-rhel7.0.0'>hvm</type>
+    <bootmenu enable='yes'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv>
+      <relaxed state='on'/>
+      <vapic state='on'/>
+      <spinlocks state='on' retries='8191'/>
+    </hyperv>
+  </features>
+  <cpu mode='custom' match='exact' check='partial'>
+    <model fallback='allow'>Nehalem</model>
+  </cpu>
+  <clock offset='localtime'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+    <timer name='hypervclock' present='yes'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/win7.qcow2'/>
+      <target dev='sda' bus='sata'/>
+      <boot order='1'/>
+    </disk>
+    <controller type='usb' index='0' model='nec-xhci'>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='sata' index='0'>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+    </controller>
+    <interface type='network'>
+      <source network='vbr0'/>
+      <model type='rtl8139'/>
+      <boot order='2'/>
+    </interface>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <channel type='spicevmc'>
+      <target type='virtio' name='com.redhat.spice.0'/>
+    </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='spice' autoport='yes'>
+      <listen type='address'/>
+      <image compression='off'/>
+    </graphics>
+    <sound model='ich6'>
+    </sound>
+    <video>
+      <model type='qxl' ram='65536' vram='65536' vgamem='65536' heads='1' primary='yes'/>
+    </video>
+    <redirdev bus='usb' type='spicevmc'>
+    </redirdev>
+    <redirdev bus='usb' type='spicevmc'>
+    </redirdev>
+    <memballoon model='virtio'>
+    </memballoon>
+  </devices>
+</domain>
+```
 ##### 2.2.2. OS配置项
 ##### 2.2.3. CPU内存配置项
 ##### 2.2.4. OS配置项
