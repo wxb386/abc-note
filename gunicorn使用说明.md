@@ -1,11 +1,17 @@
-gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -b 0.0.0.0:5007 start:app &
-启动:nohup gunicorn -k gevent -w 8 -b 0.0.0.0:5000 start:app &
-重启:kill -1 主PID
-使用环境变量配置:GUNICORN_CMD_ARGS "--bind=127.0.0.1 --workers=3" 19.7.版本
+### 启动:
+```
+nohup gunicorn -k gevent -w 8 -b 0.0.0.0:5000 start:app &
+```
 
+### 重启:
+```
+kill -1 主PID
+```
 
-
-
+### 使用环境变量配置:
+```
+GUNICORN_CMD_ARGS "--bind=127.0.0.1 --workers=3" 19.7.版本
+```
 
 在之前的文章中有记录WSGI容器的作用，以及我们知道常见的容器就只有的uWSGI和Gunicorn，在之前的文章中有记录他们的特性及优缺点，在这就不在多做描述。接下来将着重记录一下Gunicorn的一些配置：
 
