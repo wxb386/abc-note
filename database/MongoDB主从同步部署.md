@@ -45,20 +45,51 @@ switched to db admin
 ```
 
 # 初始化副本集
+```
 > rs.initiate(config);
+```
 
 # 查看同步状态
+```
 > rs.status();
+```
 
-查看后台日志
+# 查看后台日志
+
+# 验证同步数据一致性
+1.去主库m0录入数据
+```
+# mongo 192.168.80.254:27000
+repset:PRIMARY> use my_test;
+repset:PRIMARY> db.my_test.insert({"uid":"20180921"},{"uname":"centos"});
+repset:PRIMARY> exit
+```
+
+2.去备库m1检查数据
+```
+# mongo 192.168.80.254:27001
+repset:SECONDARY> use my_test;
+repset:SECONDARY> show tables; //mongodb默认是从主节点读写数据的，副本节点上不允许读，需要设置副本节点可以读。
+repset:SECONDARY> db.getMongo().setSlaveOk();
+repset:SECONDARY> show tables;
+repset:SECONDARY> db.my_test.find();
+repset:SECONDARY> exit
+```
+3.去备库m2检查数据
+```
+# mongo 192.168.80.254:27002
+repset:SECONDARY> use my_test;
+repset:SECONDARY> show tables; //mongodb默认是从主节点读写数据的，副本节点上不允许读，需要设置副本节点可以读。
+repset:SECONDARY> db.getMongo().setSlaveOk();
+repset:SECONDARY> show tables;
+repset:SECONDARY> db.my_test.find();
+repset:SECONDARY> exit
+```
 
 
+# 验证主从自动切换
 
-验证同步数据一致性
-
-验证主从自动切换
-
-启动报错
+# 启动报错
 
 
 
