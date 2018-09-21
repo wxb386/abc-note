@@ -21,8 +21,8 @@ mongodb-2|172.17.0.202|27002|secondary
 # 以复制集群方式启动MongoDB
 ```
 # docker run --name mongodb-0 -h mongodb-0 \
--v /data/mongodb/m0/db/:/data/db/:rw \
--v /data/mongodb/m0/configdb/:/data/configdb/:rw \
+-v /data/mongo/m0/db/:/data/db/:rw \
+-v /data/mongo/m0/configdb/:/data/configdb/:rw \
 -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
 --ip 172.17.0.200 \
 --add-host m0:172.17.0.200 \
@@ -32,8 +32,8 @@ mongodb-2|172.17.0.202|27002|secondary
 --replSet repset --oplogSize 2048 --logpath /data/mongod.log
 
 # docker run --name mongodb-1 -h mongodb-1 \
--v /data/mongodb/m1/db/:/data/db/:rw \
--v /data/mongodb/m1/configdb/:/data/configdb/:rw \
+-v /data/mongo/m1/db/:/data/db/:rw \
+-v /data/mongo/m1/configdb/:/data/configdb/:rw \
 -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
 --ip 172.17.0.201 \
 --add-host m0:172.17.0.200 \
@@ -43,8 +43,8 @@ mongodb-2|172.17.0.202|27002|secondary
 --replSet repset --oplogSize 2048 --logpath /data/mongod.log
 
 # docker run --name mongodb-2 -h mongodb-2 \
--v /data/mongodb/m2/db/:/data/db/:rw \
--v /data/mongodb/m2/configdb/:/data/configdb/:rw \
+-v /data/mongo/m2/db/:/data/db/:rw \
+-v /data/mongo/m2/configdb/:/data/configdb/:rw \
 -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
 --ip 172.17.0.202 \
 --add-host m0:172.17.0.200 \
