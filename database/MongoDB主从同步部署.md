@@ -21,51 +21,36 @@ mongodb-2|172.17.0.202|27002|secondary
 # 以复制集群方式启动MongoDB
 ```
 # docker run --name mongodb-0 -h mongodb-0 \
--v /data/mongo/m0/db/:/data/db/:rw \
--v /data/mongo/m0/configdb/:/data/configdb/:rw \
+-v /data/mongo/m0/:/data/:rw \
 -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
---ip 172.17.0.200 \
---add-host m0:172.17.0.200 \
---add-host m1:172.17.0.201 \
---add-host m2:172.17.0.202 \
--p 27000:27017/tcp -d mongodb:4.0.1 \
---replSet repset --oplogSize 2048 --logpath /data/mongod.log
+--network=host -d mongodb:4.0.1 --replSet repset --port 27000
 
 # docker run --name mongodb-1 -h mongodb-1 \
--v /data/mongo/m1/db/:/data/db/:rw \
--v /data/mongo/m1/configdb/:/data/configdb/:rw \
+-v /data/mongo/m1/:/data/:rw \
 -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
---ip 172.17.0.201 \
---add-host m0:172.17.0.200 \
---add-host m1:172.17.0.201 \
---add-host m2:172.17.0.202 \
--p 27001:27017/tcp -d mongodb:4.0.1 \
---replSet repset --oplogSize 2048 --logpath /data/mongod.log
+--network=host -d mongodb:4.0.1 --replSet repset --port 27001
 
 # docker run --name mongodb-2 -h mongodb-2 \
--v /data/mongo/m2/db/:/data/db/:rw \
--v /data/mongo/m2/configdb/:/data/configdb/:rw \
+-v /data/mongo/m2/:/data/:rw \
 -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
---ip 172.17.0.202 \
---add-host m0:172.17.0.200 \
---add-host m1:172.17.0.201 \
---add-host m2:172.17.0.202 \
--p 27002:27017/tcp -d mongodb:4.0.1 \
---replSet repset --oplogSize 2048 --logpath /data/mongod.log
+--network=host -d mongodb:4.0.1 --replSet repset --port 27002
 ```
 
-在任意一台实例配置
+# 在任意一台实例配置
+```
+# mongo 192.168.80.254:27000
+> use admin;
+switched to db admin
+> config = { _id:"repset", members:[ {_id:0,host:"127.0.0.1:27000"}, {_id:1,host:"127.0.0.1:27001"}, {_id:2,host:"127.0.0.1:27002"} ] };
+```
 
+# 初始化副本集
+> rs.initiate(config);
 
-初始化副本集
-
-
-查看同步状态
-
-
+# 查看同步状态
+> rs.status();
 
 查看后台日志
-
 
 
 
