@@ -27,7 +27,7 @@ mongodb-2|172.17.0.202|27002|secondary
 --ip 172.17.0.200 \
 --add-host m0:172.17.0.200 \
 --add-host m1:172.17.0.201 \
---add-host m2:172.17.0.202 
+--add-host m2:172.17.0.202 \
 -p 27000:27017/tcp -d mongodb:4.0.1 \
 --replSet repset --oplogSize 2048 --logpath /data/mongod.log
 
@@ -38,7 +38,7 @@ mongodb-2|172.17.0.202|27002|secondary
 --ip 172.17.0.201 \
 --add-host m0:172.17.0.200 \
 --add-host m1:172.17.0.201 \
---add-host m2:172.17.0.202 
+--add-host m2:172.17.0.202 \
 -p 27001:27017/tcp -d mongodb:4.0.1 \
 --replSet repset --oplogSize 2048 --logpath /data/mongod.log
 
@@ -49,7 +49,7 @@ mongodb-2|172.17.0.202|27002|secondary
 --ip 172.17.0.202 \
 --add-host m0:172.17.0.200 \
 --add-host m1:172.17.0.201 \
---add-host m2:172.17.0.202 
+--add-host m2:172.17.0.202 \
 -p 27002:27017/tcp -d mongodb:4.0.1 \
 --replSet repset --oplogSize 2048 --logpath /data/mongod.log
 ```
