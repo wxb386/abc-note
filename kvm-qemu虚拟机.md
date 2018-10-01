@@ -205,13 +205,7 @@ DNS1=202.96.128.86
 
 ## 模板系统的配置 - 进入虚拟机执行命令
 
-1.卸载防火墙和网络管理,禁用SELinux
-```
-# sed -ri 's,^SELINUX=.*,SELINUX=disabled,' /etc/selinux/config
-# yum remove firewalld NetworkManager
-```
-
-2.配置网卡
+1.配置网卡
 ```
 # cat << . > /etc/sysconfig/network-scripts/ifcfg-eth0
 TYPE=Ethernet
@@ -220,32 +214,34 @@ DEVICE=eth0
 BOOTPROTO=dhcp
 ONBOOT=yes
 .
+systemctl restart network
+```
+
+2.卸载防火墙和网络管理,禁用SELinux
+```
+# sed -ri 's,^SELINUX=.*,SELINUX=disabled,' /etc/selinux/config
+# yum remove firewalld NetworkManager
 ```
 
 3.配置YUM源,安装常用工具
 ```
-# curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS7-Base-163.repo
+# rm -rf /etc/yum.repos.d/* \
+  && curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS7-Base-163.repo
 # yum install epel-release
 # rpm -Uvh \
   http://mirrors.163.com/rpmfusion/free/el/rpmfusion-free-release-7.noarch.rpm \
   http://mirrors.163.com/rpmfusion/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
 # yum install vim net-tools bash-completion
+# yum clean all && rm -rf /var/cache/yum
 ```
 
-4.配置可用console连接
-```
-# sed -ri '/GRUB_CMDLINE_LINUX/s/"$/ console=tty0 console=ttyS0,115200n8"/' /etc/sysconfig/grub
-# grub2-mkconfig -o /boot/grub2/grub.cfg
-# sed -ri '/linux16/s,$,console=ttyS0,' /etc/grub2.cfg
-```
-
-5.禁用空路由
+4.禁用空路由
 ```
 # cat << . >> /etc/sysconfig/network
 NOZEROCONF="yes"
 .
 ```
 
-6.完成以上操作后重启`# reboot`
+5.完成以上操作后重启`# reboot`
 
 
