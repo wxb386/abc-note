@@ -201,4 +201,11 @@ DNS1=202.96.128.86
 - 压缩办法：
 `qemu-img convert -c -O qcow2 /dev/shm/win.qcow2 /home/soft/kvm/ocr.qcow2`
 - 其中ocr.qcow2是你的目标镜像
-- 意外惊喜:压缩完后，体积小下来了，而且再用磁盘分析工具一看，碎片为2％，之前可是15％啊
+- 意外惊喜:压缩完后，体积小下来了，而且再用磁盘分析工具一看，碎片为2%，之前可是15%啊
+
+## 模板系统的配置
+1.卸载防火墙和网络管理,禁用SELinux
+```
+# sed -ri 's,^SELINUX=.*,SELINUX=disabled,' /etc/selinux/config
+# yum remove firewalld NetworkManager
+```
