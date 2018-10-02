@@ -104,8 +104,32 @@ MongoDB存储引擎
 
 2.In-Memory 存储引擎将数据存储到内存
 
+四，mongod 跟存储引擎相关的参数
 
+1，使用WiredTiger的参数设置
 
+复制代码
+```
+mongod 
+--storageEngine wiredTiger 
+--dbpath <path> 
+--journal --wiredTigerCacheSizeGB <value>
+--wiredTigerJournalCompressor <compressor>
+--wiredTigerCollectionBlockCompressor <compressor>
+--wiredTigerIndexPrefixCompression <boolean>
+```
+复制代码
+2，使用In-Memory的参数设置
+
+复制代码
+```
+mongod 
+--storageEngine inMemory
+--dbpath <path> 
+--inMemorySizeGB <newSize>
+--replSet <setname>
+--oplogSize <value>
+```
 
 
 
