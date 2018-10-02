@@ -92,7 +92,17 @@ repset:SECONDARY> exit
 # 启动报错
 
 
+MongoDB存储引擎
+- mongodb参数:`--storageEngine  <wiredTiger | inMemory>`
+1.WiredTiger 存储引擎将数据存储到硬盘文件
+1.1.文档级别的并发控制
+1.2.检查点
+1.3.预先记录日志
+1.4.内存使用
+1.5.数据压缩
+1.6.Disk空间回收
 
+2.In-Memory 存储引擎将数据存储到内存
 
 
 
