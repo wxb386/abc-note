@@ -7,7 +7,7 @@
 
 2.解压到工作目录
 ```
-# tar -xvf pycharm-community-2018.2.4.tar.gz
+# tar -xvf pycharm-community-2018.2.4.tar.gz ./
 ```
 
 3.创建桌面图标
