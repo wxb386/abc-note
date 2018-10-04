@@ -13,6 +13,7 @@
 # make -j4 && make install
 # ln -s /usr/local/python3/bin/python3.6 /usr/bin/python3
 # ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+```
 
 **3.添加库目录**
 ```
@@ -22,7 +23,18 @@
 # ldconfig
 ```
 
-**4.验证**
+**4.添加阿里云的pypi**
+```
+# mkdir -p /root/.pip/pip.conf
+# cat << . > /root/.pip/pip.conf
+[global]
+index-url = https://mirrors.aliyun.com/pypi/simple/
+[install]
+trusted-host = mirrors.aliyun.com
+.
+```
+
+**5.验证**
 ```
 # python3 -V
 ```
