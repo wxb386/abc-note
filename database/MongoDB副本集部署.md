@@ -18,7 +18,7 @@ mongodb-2|172.17.0.202|27002|secondary
 # docker pull mongodb:4.0.1
 ```
 
-# 以复制集群方式启动MongoDB
+# 以复制集群方式启动MongoDB - 注意:/data/目录权限要求是999
 ```
 # docker run --name mongodb-0 -h mongodb-0 \
 -v /data/mongo/m0/:/data/:rw \
@@ -132,7 +132,7 @@ mongod
 ```
 
 
-## MongoDB的配置(可以直接写到配置文件中,若作为启动参数则添加--)
+## MongoDB的配置(可以直接写到配置文件中,若作为启动参数则去掉=添加--)
 参数|说明
 -|-
 logpath=/|日志文件
