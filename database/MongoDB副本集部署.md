@@ -132,6 +132,16 @@ mongod
 ```
 
 
+## MongoDB的配置(可以直接写到配置文件中,若作为启动参数则添加--)
+参数|说明
+-|-
+logpath=/|日志文件
+logaddend=true|追加方式写日志
+bind_ip=<ip>|监听地址
+dbpath=/|数据存放目录
+
+
+
 
 
 
