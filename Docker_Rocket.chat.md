@@ -1,14 +1,14 @@
 # Docker_Rocket.chat服务部署
 
-- 更新时间:2018-09-10
+- 更新时间:2018-10-08
 #### 1.下载镜像,镜像重命名
 ```
 # docker pull rocket.chat:0.68.5
-# docker pull mongodb:4.0.1
+# docker pull mongo:3.6.8
 # docker tag docker.io/rocket.chat:0.68.5 rocket.chat:0.68.5
-# docker tag docker.io/mongodb:4.0.1 mongodb:4.0.1
+# docker tag docker.io/mongo:3.6.8 mongo:3.6.8
 # docker rmi docker.io/rocket.chat:0.68.5
-# docker rmi docker.io/mongodb:4.0.1
+# docker rmi docker.io/mongo:3.6.8
 ```
 
 2.启动mongodb,挂载数据卷
