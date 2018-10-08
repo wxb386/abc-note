@@ -115,7 +115,14 @@ kvm_intel kvm_amd
   </devices>
 </domain>
 ```
-##### 2.2.2. OS配置项
+##### 2.2.2. 桥接网络模式的配置
+```
+<interface type='bridge'>
+  <source bridge='br0'/>
+  <model type='virtio'/>
+</interface>
+
+```
 ##### 2.2.3. CPU内存配置项
 ##### 2.2.4. OS配置项
 ##### 2.2.5. CPU内存配置项
