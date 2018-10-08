@@ -13,12 +13,19 @@
 
 2.启动mongodb,挂载数据卷
 ```
-# docker run --name mongodb --rm -h mongodb -v /etc/localtime:/etc/localtime:ro -v <>:/data/configdb/:rw -v <>:/data/db/:rw -p 27017:27017/tcp -d mongodb:4.0.1
+# docker run --name mongodb --network host -h mongodb \
+  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
+  -v /data/mongodb/db/:/data/db/:rw \
+  -d mongo:3.6.8 --logpath /data/db/mongo.log --logappend --bind_ip_all --dbpath /data/db/
 ```
 
 3.启动rocket.chat,连接mongodb
 ```
-# docker run --name rocket.chat --link mongodb:db --rm -h rocket.chat -v /etc/localtime:/etc/localtime:ro -v <>:/app/uploads/:rw -p 3000:3000/tcp -e ROOT_URL='http://<>:3000' -d rocket.chat:0.68.5
+# docker run --name rocket.chat --network host --add-host db:127.0.0.1 \
+  -h rocket.chat \
+  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
+  -v /data/rocket.chat/uploads/:/app/uploads/:rw \
+  -e ROOT_URL='http://<>:3000' -d rocket.chat:0.68.5 && docker logs -f rocket.chat
 ```
 
 4.配置防火墙
