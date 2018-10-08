@@ -9,9 +9,9 @@ NoSQL的产生就是为了解决大数据量、高扩展性、高性能、灵活
 # 集群规划 - Docker
 主机|地址|对外端口|默认角色
 -|-|-|-
-mongodb-0|172.17.0.200|27000|primary
-mongodb-1|172.17.0.201|27001|secondary
-mongodb-2|172.17.0.202|27002|secondary
+mongo-0|192.168.80.254|27000|primary
+mongo-1|192.168.80.254|27001|secondary
+mongo-2|192.168.80.254|27002|secondary
 
 # 下载MongoDB镜像
 ```
@@ -56,7 +56,7 @@ mongodb-2|172.17.0.202|27002|secondary
 # mongo 192.168.80.254:27000
 > use admin;
 switched to db admin
-> config = { _id:"repset", members:[ {_id:0,host:"127.0.0.1:27000"}, {_id:1,host:"127.0.0.1:27001"}, {_id:2,host:"127.0.0.1:27002"} ] };
+> config = { _id:"rs1", members:[ {_id:0,host:"127.0.0.1:27000"}, {_id:1,host:"127.0.0.1:27001"}, {_id:2,host:"127.0.0.1:27002"} ] };
 ```
 
 # 初始化副本集
@@ -106,8 +106,16 @@ repset:SECONDARY> exit
 
 # 启动报错
 
+# 物理机下载安装MongoDB
+```
+# cd /root/soft/
+# curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.6.8.tgz
+# tar -xf mongodb-linux-x86_64-rhel70-3.6.8.tgz
+# mv mongodb-linux-x86_64-rhel70-3.6.8 /usr/local/mongdb-3.6.8
+# for i in $(ls /usr/local/mongdb-3.6.8/bin/);do ln -sf $i /usr/bin/;done
+```
 
-MongoDB存储引擎
+# MongoDB存储引擎
 - mongodb参数:`--storageEngine  <wiredTiger | inMemory>`
 1.WiredTiger 存储引擎将数据存储到硬盘文件
 1.1.文档级别的并发控制
