@@ -15,25 +15,40 @@ mongodb-2|172.17.0.202|27002|secondary
 
 # 下载MongoDB镜像
 ```
-# docker pull mongodb:4.0.1
+# docker pull mongo:3.6.8
 ```
 
 # 以复制集群方式启动MongoDB - 注意:/data/目录权限要求是999
 ```
-# docker run --name mongodb-0 -h mongodb-0 \
--v /data/mongo/m0/:/data/:rw \
--v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
---network=host -d mongodb:4.0.1 --replSet repset --port 27000
+# docker run --name mongo-0 --network host -h mongo-0 \
+  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
+  -v /data/mongo/m0/:/data/db/:rw \
+  -d mongo:3.6.8 \
+  --dbpath /data/db/ \
+  --logpath /data/db/mongo.log \
+  --logappend \
+  --replSet rs1 \
+  --port 27000
 
-# docker run --name mongodb-1 -h mongodb-1 \
--v /data/mongo/m1/:/data/:rw \
--v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
---network=host -d mongodb:4.0.1 --replSet repset --port 27001
+# docker run --name mongo-1 --network host -h mongo-1 \
+  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
+  -v /data/mongo/m1/:/data/db/:rw \
+  -d mongo:3.6.8 \
+  --dbpath /data/db/ \
+  --logpath /data/db/mongo.log \
+  --logappend \
+  --replSet rs1 \
+  --port 27001
 
-# docker run --name mongodb-2 -h mongodb-2 \
--v /data/mongo/m2/:/data/:rw \
--v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
---network=host -d mongodb:4.0.1 --replSet repset --port 27002
+# docker run --name mongo-2 --network host -h mongo-2 \
+  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
+  -v /data/mongo/m2/:/data/db/:rw \
+  -d mongo:3.6.8 \
+  --dbpath /data/db/ \
+  --logpath /data/db/mongo.log \
+  --logappend \
+  --replSet rs1 \
+  --port 27002
 ```
 
 # 在任意一台实例配置
