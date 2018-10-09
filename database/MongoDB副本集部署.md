@@ -1,24 +1,33 @@
-MongoDB副本集部署
+**MongoDB副本集+Keepalived部署高可用集群**
 - Mongodb副本集：
-NoSQL的产生就是为了解决大数据量、高扩展性、高性能、灵活数据模型、高可用性。
-但是光通过主从模式的架构远远达不到上面几点，由此MongoDB设计了副本集和分片的功能，先来用用副本集。
+NoSQL的产生就是为了解决大数据量、高扩展性、高性能、灵活数据模型、高可用性。但是光通过主从模式的架构远远达不到上面几点，由此MongoDB设计了副本集和分片的功能，先来用用副本集。
 - Mongodb副本集的同步机制：
 数据复制的目的是使数据得到最大的可用性，避免单点故障引起的整站不能访问的情况的发生，Mongodb的副本集在同一时刻只有一台服务器是可以写的，副本集的主从复制也是一个异步同步的过程，是slave端从primary端获取日志，然后在自己身上完全顺序的执行日志所记录的各种操作（该日志是不记录查询操作的），这个日志就是local数据库中的oplog.rs表，默认在64位机器上这个表是比较大的，占磁盘大小的5%，oplog.rs的大小可以在启动参数中设定：--oplogSize 1000,单位是M。
+- Keepalived高可用原理:
+Keepalived通过VRRP(虚拟冗余路由协议)检测其他节点优先级,当优先级是同ID节点中最高是,抢占VIP(虚拟IP).节点本身会定时检测指定服务的状态,发生异常时会将优先级(+/-)设定的数值,当检测到本身不是最高优先级时,放弃VIP.
 
 
-# 集群规划 - Docker
+# 集群规划
+- Docker
 主机|地址|对外端口|默认角色
 -|-|-|-
 mongo-0|192.168.80.254|27000|primary
 mongo-1|192.168.80.254|27001|secondary
 mongo-2|192.168.80.254|27002|secondary
+- 虚拟机
+主机|地址|对外端口|默认角色
+-|-|-|-
+mongo-0|192.168.80.11|27017|primary
+mongo-1|192.168.80.12|27017|secondary
+mongo-2|192.168.80.13|27017|secondary
 
-# 下载MongoDB镜像
+# Docker部署
+## 下载MongoDB镜像
 ```
 # docker pull mongo:3.6.8
 ```
 
-# 以复制集群方式启动MongoDB - 注意:/data/目录权限要求是999
+## 以复制集群方式启动MongoDB - 注意:/data/目录权限要求是999
 ```
 # docker run --name mongo-0 --network host -h mongo-0 \
   -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
@@ -51,7 +60,7 @@ mongo-2|192.168.80.254|27002|secondary
   --port 27002
 ```
 
-# 在任意一台实例配置
+## 在任意一台实例配置
 ```
 # mongo 192.168.80.254:27000
 > use admin;
@@ -59,19 +68,19 @@ switched to db admin
 > config = { _id:"rs1", members:[ {_id:0,host:"127.0.0.1:27000"}, {_id:1,host:"127.0.0.1:27001"}, {_id:2,host:"127.0.0.1:27002"} ] };
 ```
 
-# 初始化副本集
+## 初始化副本集
 ```
 > rs.initiate(config);
 ```
 
-# 查看同步状态
+## 查看同步状态
 ```
 > rs.status();
 ```
 
-# 查看后台日志
+## 查看后台日志
 
-# 验证同步数据一致性
+## 验证同步数据一致性
 1.去主库m0录入数据
 ```
 # mongo 192.168.80.254:27000
@@ -101,12 +110,7 @@ repset:SECONDARY> db.my_test.find();
 repset:SECONDARY> exit
 ```
 
-
-# 验证主从自动切换
-
-# 启动报错
-
-# 物理机下载安装MongoDB
+# 虚拟机部署
 ```
 # cd /root/soft/
 # curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.6.8.tgz
@@ -114,6 +118,58 @@ repset:SECONDARY> exit
 # mv mongodb-linux-x86_64-rhel70-3.6.8 /usr/local/mongdb-3.6.8
 # for i in $(ls /usr/local/mongdb-3.6.8/bin/);do ln -sf $i /usr/bin/;done
 ```
+# Keepalived安装
+- 在每台服务器上安装Keepalived
+```
+# yum install keepalived
+```
+
+- 配置Keepalived
+```
+# cat << . > /etc/keepalived/keepalived.conf
+! Configuration File for keepalived
+global_defs {
+  router_id LVS_DEVEL
+}
+vrrp_script check {
+  script "echo 'rs.isMaster()' | mongo | grep 'ismaster.*true'"
+  interval 5
+  weight -50
+}
+vrrp_instance VI_1 {
+  state MASTER
+  interface eth0
+  virtual_router_id 51
+  priority 150
+  advert_int 1
+  authentication {
+    auth_type PASS
+    auth_pass 1111
+  }
+  virtual_ipaddress {
+    192.168.80.15
+  }
+  track_script {
+    check
+  }
+}
+.
+```
+
+- 起服务
+```
+# systemctl restart keepalived
+# systemctl enable keepalived
+```
+
+- 检查VIP是否切换
+```
+# ip a s eth0
+```
+
+---
+
+---
 
 # MongoDB存储引擎
 - mongodb参数:`--storageEngine  <wiredTiger | inMemory>`
@@ -163,6 +219,7 @@ logaddend=true|追加方式写日志
 bind_ip=<ip>|监听地址
 dbpath=/|数据存放目录
 
+## Keepalived
 
 
 
