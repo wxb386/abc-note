@@ -6,8 +6,22 @@ NoSQL的产生就是为了解决大数据量、高扩展性、高性能、灵活
 - Keepalived高可用原理:
 Keepalived通过VRRP(虚拟冗余路由协议)检测其他节点优先级,当优先级是同ID节点中最高是,抢占VIP(虚拟IP).节点本身会定时检测指定服务的状态,发生异常时会将优先级(+/-)设定的数值,当检测到本身不是最高优先级时,放弃VIP.
 
+### 关闭THP
+Transparent Huge Pages (THP)，通过使用更大的内存页面，可以减少具有大量内存的机器上的缓冲区（TLB）查找的开销。
+但是，数据库工作负载通常对THP表现不佳，因为它们往往具有稀疏而不是连续的内存访问模式。您应该在Linux机器上禁用THP，以确保MongoDB的最佳性能。
+```
+# cat << . >> /etc/rc.d/rc.local
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+  echo never > /sys/kernel/mm/transparent_hugepage/enabled
+fi
+if test -f /sys/kernel/mm/transparent_hugepage/defrag; then
+   echo never > /sys/kernel/mm/transparent_hugepage/defrag
+fi
+.
+# chmod +x /etc/rc.d/rc.local
+```
 
-# 集群规划
+### 集群规划
 - Docker
 主机|地址|对外端口|默认角色
 -|-|-|-
@@ -21,13 +35,13 @@ mongo-0|192.168.80.11|27017|primary
 mongo-1|192.168.80.12|27017|secondary
 mongo-2|192.168.80.13|27017|secondary
 
-# Docker部署
-## 下载MongoDB镜像
+### Docker部署
+#### 下载MongoDB镜像
 ```
 # docker pull mongo:3.6.8
 ```
 
-## 以复制集群方式启动MongoDB - 注意:/data/目录权限要求是999
+#### 以复制集群方式启动MongoDB - 注意:/data/目录权限要求是999
 ```
 # docker run --name mongo-0 --network host -h mongo-0 \
   -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
@@ -111,6 +125,8 @@ repset:SECONDARY> exit
 ```
 
 # 虚拟机部署
+- 部署MongoDB
+
 ```
 # cd /root/soft/
 # curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.6.8.tgz
@@ -118,6 +134,106 @@ repset:SECONDARY> exit
 # mv mongodb-linux-x86_64-rhel70-3.6.8 /usr/local/mongdb-3.6.8
 # for i in $(ls /usr/local/mongdb-3.6.8/bin/);do ln -sf $i /usr/bin/;done
 ```
+- 创建用户和用户组
+
+```
+# groupadd -g 800 mongod
+# useradd -s /sbin/nologin -u 800 -g mongod mongod
+```
+
+- 创建数据目录
+
+```
+# mkdir -p /data/mongo/
+# chown -R mongod:mongod /data/mongo/
+```
+
+- 创建配置文件
+
+```
+# cat << . > /etc/mongod.conf
+#监听0.0.0.0:27017
+bind_ip_all=true
+port=27017
+#数据库目录
+dbpath=/data/mongo/
+replSet=rs0
+auth=false
+#keyFile=/data/keyfile
+#以守护进程的方式运行MongoDB，创建服务器进程
+fork=true
+#设置每个数据库将被保存在一个单独的目录
+directoryperdb=true
+#日志配置
+logpath=/data/mongo/mongo.log
+logappend=true
+.
+```
+
+- 启动和关闭服务 - 切记不可`kill -9`
+
+```
+# mongod -f /etc/mongo.conf
+# mongod -f /etc/mongo.conf --shutdown
+# pkill -2 mongod
+```
+
+- 启动脚本
+
+```
+# cat << . > /etc/init.d/mongod
+#!/bin/bash
+MONGOD=/usr/bin/mongod
+MONGOCONF=/etc/mongod.conf
+InfoFile=/tmp/start.mongo
+. /etc/init.d/functions
+status(){
+  PID=`awk 'NR==2{print $NF}' $InfoFile`
+  Run_Num=`ps -p $PID|wc -l`
+  if [ $Run_Num -eq 2 ]; then
+    echo "MongoDB is running"
+  else
+    echo "MongoDB is shutdown"
+    return 3
+  fi
+}
+start() {
+  status &>/dev/null
+  if [ $? -ne 3 ];then
+    action "启动MongoDB,服务运行中..."  /bin/false
+    exit 2
+  fi
+  sudo su - mongod -s /bin/bash -c "$MONGOD -f $MONGOCONF" >$InfoFile 2>/dev/null
+  if [ $? -eq 0 ];then
+    action "启动MongoDB"  /bin/true
+  else
+    action "启动MongoDB"  /bin/false
+  fi
+}
+stop() {
+  sudo su - mongod -s /bin/bash -c "$MONGOD -f $MONGOCONF --shutdown"  &>/dev/null
+  if [ $? -eq 0 ];then
+    action "停止MongoDB"  /bin/true
+  else
+    action "停止MongoDB"  /bin/false
+  fi
+}
+case "$1" in
+start)
+  start;;
+stop)
+  stop;;
+restart)
+  stop;sleep 2;start;;
+status)
+  status;;
+*)
+  echo $"Usage: $0 {start|stop|restart|status}";exit 1
+esac
+.
+# chmod 755 /etc/init.d/mongod
+```
+
 # Keepalived安装
 - 在每台服务器上安装Keepalived
 ```
@@ -220,7 +336,7 @@ bind_ip=<ip>|监听地址
 dbpath=/|数据存放目录
 
 ## Keepalived
-
+db.createUser({user:"root",pwd:"admin",roles:[{role:"root",db:"admin"}]})
 
 
 
