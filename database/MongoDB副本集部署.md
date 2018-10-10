@@ -339,8 +339,40 @@ bind_ip=<ip>|监听地址
 dbpath=/|数据存放目录
 
 ## Keepalived
-db.createUser({user:"root",pwd:"admin",roles:[{role:"root",db:"admin"}]})
 
+### 6. MongoDB用户的权限管理
+
+- MongoDB用户中权限的说明
+
+权限|说明
+-|-
+Read|允许用户读取指定数据库
+readWrite|允许用户读写指定数据库
+dbAdmin|允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile
+userAdmin|允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户
+clusterAdmin|只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。
+readAnyDatabase|只在admin数据库中可用，赋予用户所有数据库的读权限
+readWriteAnyDatabase|只在admin数据库中可用，赋予用户所有数据库的读写权限
+userAdminAnyDatabase|只在admin数据库中可用，赋予用户所有数据库的userAdmin权限
+dbAdminAnyDatabase|只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。
+root|只在admin数据库中可用。超级账号，超级权限
+- 更多关于用户权限的说明参照：`https://docs.mongodb.com/manual/core/security-built-in-roles/`
+- 用户创建语
+```
+> use <库名>
+> db.createUser({
+  user:"<用户名>",
+  pwd:"<密码>",
+  cusomData:{<任意内容,比如介绍等>},
+  roles:[{role:"<权限>",db:"<库名>"},...]})
+> db.createUser({
+  user:"<用户名>",
+  pwd:"<密码>",
+  cusomData:{<任意内容,比如介绍等>},
+  roles:["<权限>",...]})
+> db.createUser({user:"admin",pwd:"admin",roles:["root"]})
+> db.createUser({user:"app",pwd:"123",roles:["readWrite","dbAdmin","userAdmin"]})
+```
 
 
 
