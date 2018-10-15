@@ -18,6 +18,7 @@ http://mirrors.163.com/rpmfusion/nonfree/el/rpmfusion-nonfree-release-7.noarch.r
   https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm \
   https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
 ```
+
 ## 4. 一键脚本
 ```
 # cat << . > one_key_yum.sh
