@@ -35,3 +35,12 @@ http://mirrors.163.com/rpmfusion/nonfree/el/rpmfusion-nonfree-release-7.noarch.r
 yum clean all && yum repolist
 .
 ```
+
+**5.如果想回滚操作**
+```
+# 如果安装了docker,并做过升级,现在想回滚到安装后未升级前的状态
+yum history list docker
+# 可以看到操作历史的操作ID,如52
+yum history undo 52
+# 这样就完成回滚了
+```
