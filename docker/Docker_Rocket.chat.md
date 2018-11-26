@@ -22,10 +22,11 @@
 3.启动rocket.chat,连接mongodb
 ```
 # docker run --name rocket.chat --network host --add-host db:127.0.0.1 \
+  -u root \
   -h rocket.chat \
   -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
   -v /data/rocket.chat/uploads/:/app/uploads/:rw \
-  -e ROOT_URL='http://<>:3000' -d rocket.chat:0.68.5 && docker logs -f rocket.chat
+  -e ROOT_URL='http://119.23.184.67:3000' -d rocket.chat:0.68.5 && docker logs -f rocket.chat
 ```
 
 4.配置防火墙
